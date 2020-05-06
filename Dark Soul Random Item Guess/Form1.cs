@@ -34,74 +34,110 @@ namespace Dark_Soul_Random_Item_Guess
         private void CreateLists()
         {
             Weapons = new List<Item>();
+            LoadData(ItemType.Weapon, Weapons);
             Armors = new List<Item>();
+            LoadData(ItemType.Armor, Armors);
             Magics = new List<Item>();
+            LoadData(ItemType.Magic, Magics);
             Rings = new List<Item>();
+            LoadData(ItemType.Ring, Rings);
             Consumable = new List<Item>();
+            LoadData(ItemType.Consumable, Consumable);
             Gestures = new List<Item>();
+            LoadData(ItemType.Gesture, Gestures);
+
 
         }
 
         private void LoadData(ItemType itemType, List<Item> items)
         {
+            string Filelocation = "";
             switch (itemType)
             {
                 case ItemType.Weapon:
-                    string location = Application.StartupPath + "\\Data\\Weapons\\";
-                    if (!File.Exists(location+ "WeaponNames.txt"))
-                    {
-                        MessageBox.Show("MISSING_DATA::WEAPONS::AT_PATH::" + location);
-                        return;
-                    }
-                    using (StreamReader reader = new StreamReader(location+ "WeaponNames.txt"))
-                    {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            items.Add(new Item { name = line });
-                        }
-                    }
-                    string nameHolder;
-                    for (int i = 0; i < items.Count; i++)
-                    {
-                        nameHolder = items[i].name;
-                        nameHolder.Replace(' ', '_');
-                        items[i].image = Image.FromFile(location + nameHolder + ".png");
-                    }
+                    Filelocation = "Weapon";
                     break;
+
+                case ItemType.Armor:
+                    Filelocation = "Armor";
+                    break;
+
+                case ItemType.Magic:
+                    Filelocation = "Magic";
+                    break;
+
+                case ItemType.Ring:
+                    Filelocation = "Ring";
+                    break;
+
+                case ItemType.Consumable:
+                    Filelocation = "Consumable";
+                    break;
+
+                case ItemType.Gesture:
+                    Filelocation = "Gesture";
+                    break;
+            }
+
+            string location = Application.StartupPath + "\\Data\\"+Filelocation+"\\";
+            if (!File.Exists(location + Filelocation+"Names.txt"))
+            {
+                MessageBox.Show("MISSING_DATA::"+Filelocation.ToUpper()+"::AT_PATH::" + location);
+                return;
+            }
+            using (StreamReader reader = new StreamReader(location + Filelocation + "Names.txt"))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    items.Add(new Item { name = line });
+                }
+            }
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (File.Exists(location + items[i].name + ".png"))
+                {
+                    items[i].image = Image.FromFile(location + items[i].name + ".png");
+                }
+                else
+                {
+                    MessageBox.Show(location + items[i].name + ".png" + "\nCouldn't be found");
+                }
             }
         }
 
 
         private void button1_Click(object sender, EventArgs e)
         {
+            LaItemName.Text = "";
+            RTBHowToGetText.Text = "";
             RollItems = new List<Item>();
-            if (RBWeapons.Checked)
+            if (CBWeapons.Checked)
             {
                 RollItems.AddRange(Weapons);
             }
 
-            if (RBArmor.Checked)
+            if (CBArmors.Checked)
             {
                 RollItems.AddRange(Armors);
             }
 
-            if (RBMagic.Checked)
+            if (CBMagics.Checked)
             {
                 RollItems.AddRange(Magics);
             }
 
-            if (RBRings.Checked)
+            if (CBRings.Checked)
             {
                 RollItems.AddRange(Rings);
             }
 
-            if (RBConsumeable.Checked)
+            if (CBConsumables.Checked)
             {
                 RollItems.AddRange(Consumable);
             }
 
-            if (RBGestures.Checked)
+            if (CBGestures.Checked)
             {
                 RollItems.AddRange(Gestures);
             }
@@ -110,7 +146,7 @@ namespace Dark_Soul_Random_Item_Guess
             {
                 SelectedItem = RollItems[RNG.Next(0, RollItems.Count)];
                 PBItemDisplay.Image = SelectedItem.image;
-                if (RBViewName.Checked)
+                if (CBShowData.Checked)
                 {
                     LaItemName.Text = SelectedItem.name;
                     RTBHowToGetText.Text = SelectedItem.howToGet;
